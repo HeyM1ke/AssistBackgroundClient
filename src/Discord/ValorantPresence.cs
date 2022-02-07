@@ -29,7 +29,7 @@ namespace AssistBackgroundClient.Discord
 
         public async Task ConnectionLoop()
         {
-            while (currentUser.tokenData.access is null)
+            while (currentUser.UserData is null)
             {
                 Console.WriteLine("Authing");
                 try
@@ -40,6 +40,7 @@ namespace AssistBackgroundClient.Discord
                 {
                     Console.WriteLine("Error");
                     Console.WriteLine(ex.Message);
+                    currentUser = new RiotUser(); //Work around a bug (?) in valnet which attempt to re-set the default headers which throws an exception
                 }
                 Console.WriteLine("Looking for Game");
                 Thread.Sleep(10000);
