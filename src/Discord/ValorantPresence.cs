@@ -29,7 +29,7 @@ namespace AssistBackgroundClient.Discord
 
         public async Task ConnectionLoop()
         {
-            while (currentUser.tokenData.access is null)
+            while (currentUser.UserData is null)
             {
                 Console.WriteLine("Authing");
                 try
@@ -40,6 +40,7 @@ namespace AssistBackgroundClient.Discord
                 {
                     Console.WriteLine("Error");
                     Console.WriteLine(ex.Message);
+                    currentUser = new RiotUser(); //Work around a bug (?) in valnet which attempt to re-set the default headers which throws an exception
                 }
                 Console.WriteLine("Looking for Game");
                 Thread.Sleep(10000);
@@ -226,14 +227,15 @@ namespace AssistBackgroundClient.Discord
                 privacy = DiscordRPC.Party.PrivacySetting.Public;
             }
 
-            string state = $"{userPrivateData.partyOwnerMatchScoreAllyTeam} - {userPrivateData.partyOwnerMatchScoreEnemyTeam}";
+            string state = $"Party: ";
 
             string details;
             if (userPrivateData.partyState.Contains("CUSTOM_GAME"))
-                details = "Custom Game";
+                details = $"Custom Game || {userPrivateData.partyOwnerMatchScoreAllyTeam} - {userPrivateData.partyOwnerMatchScoreEnemyTeam}";
             else
             {
-                details = char.ToUpper(userPrivateData.queueId[0]) + userPrivateData.queueId.Substring(1);
+                var queue = await DetermineQueueKey();
+                details = $"{queue} || {userPrivateData.partyOwnerMatchScoreAllyTeam} - {userPrivateData.partyOwnerMatchScoreEnemyTeam}";
             }
 
             string mapName = await DetermineMapKey();
@@ -298,6 +300,26 @@ namespace AssistBackgroundClient.Discord
             }
 
         }
+
+        private async Task<string> DetermineQueueKey()
+        {
+            switch (userPrivateData.queueId)
+            {
+                case "ggteam":
+                    return "Escalation";
+                case "deathmatch":
+                    return "Deathmatch";
+                case "spikerush":
+                    return "SpikeRush";
+                case "competitive":
+                    return "Competitive";
+                case "unrated":
+                    return "Unrated";
+                default:
+                    return "VALORANT";
+            }
+
+        }
         #endregion
 
     }
@@ -305,3 +327,4 @@ namespace AssistBackgroundClient.Discord
 
 
 }
+
