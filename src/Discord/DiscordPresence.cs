@@ -19,7 +19,8 @@ namespace AssistBackgroundClient.Discord
         #endregion
         public static readonly Button[] clientButtons =
         {
-            new() {Label = "Download Assist", Url = "https://cdn.rumblemike.com/AssistSetup.exe"}
+            new() {Label = "Download Assist", Url = "https://github.com/Rumblemike/Assist/releases/latest/download/AssistSetup.exe"},
+            new() {Label = "Join the Discord!", Url = "https://discord.gg/B43EndmEgW"}
         };
 
         public static ValorantPresence ValorantPresence;
